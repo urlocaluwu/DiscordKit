@@ -31,30 +31,16 @@ public class CachedState: ObservableObject {
 
     /// Populates the cache using the provided event.
     /// - Parameter event: An incoming Gateway "ready" event.
-
     func configure(using event: ReadyEvt) {
-    // Unwrap the guilds
-    event.guilds.forEach { decodeResult in
-        if let guild = try? decodeResult.unwrap() {
-            appendOrReplace(guild)
-        } else {
-            print("Failed to decode guild")
+        event.guilds.forEach(appendOrReplace(_:))
+        dms = event.private_channels
+        user = event.user
+        event.users.forEach(appendOrReplace(_:))
+        event.merged_members.enumerated().forEach { (idx, guildMembers) in
+            members[event.guilds[idx].id] = guildMembers.first(where: { $0.user_id == event.user.id })
         }
+        print(members)
     }
-
-    // Unwrap DM channels
-    dms = event.private_channels.compactUnwrap()
-
-    // Handle members and current user
-    user = event.user
-    event.users.forEach(appendOrReplace(_:))
-    event.merged_members.enumerated().forEach { (idx, guildMembers) in
-        if let guildID = try? event.guilds[idx].unwrap().id {
-            members[guildID] = guildMembers.first(where: { $0.user_id == event.user.id })
-        }
-    }
-}
-
 
     // MARK: - Guilds
 
@@ -63,7 +49,6 @@ public class CachedState: ObservableObject {
     func appendOrReplace(_ guild: PreloadedGuild) {
         guilds.updateValue(guild, forKey: guild.id)
     }
-
 
     /// Removes any guilds with an identifier matching the identifier of the provided guild parameter.
     /// - Parameter guild: A ``Guild`` instance whose identifier will be used to remove any guilds with a matching identifier.
