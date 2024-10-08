@@ -52,7 +52,7 @@ public extension DiscordREST {
         before: Snowflake? = nil,
         after: Snowflake? = nil,
         limit: Int = 200
-    ) async throws -> [PartialGuild] {
+    ) async throws -> [PreloadedGuild] {
         return try await getReq(path: "users/@me/guilds")
     }
 
