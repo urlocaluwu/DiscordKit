@@ -40,7 +40,7 @@ public class CachedState: ObservableObject {
             }
         }
 
-        dms = event.private_channels
+        dms = event.private_channels.compactUnwrap()
         user = event.user
         event.users.forEach(appendOrReplace(_:))
         event.merged_members.enumerated().forEach { (idx, guildMembers) in
