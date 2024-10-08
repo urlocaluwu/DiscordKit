@@ -45,17 +45,9 @@ public class CachedState: ObservableObject {
     // Unwrap DM channels
     dms = event.private_channels.compactUnwrap()
 
-    // Unwrap users
-    event.users.forEach { decodeResult in
-        if let user = try? decodeResult.unwrap() {
-            appendOrReplace(user)
-        } else {
-            print("Failed to decode user")
-        }
-    }
-
     // Handle members and current user
     user = event.user
+    event.users.forEach(appendOrReplace(_:))
     event.merged_members.enumerated().forEach { (idx, guildMembers) in
         if let guildID = try? event.guilds[idx].unwrap().id {
             members[guildID] = guildMembers.first(where: { $0.user_id == event.user.id })
