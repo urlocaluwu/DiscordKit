@@ -68,12 +68,8 @@ public class CachedState: ObservableObject {
 
     /// Updates or appends the provided guild.
     /// - Parameter guild: The guild you want to update or append to the cache.
-    func appendOrReplace(_ decodeResult: DecodeThrowable<PreloadedGuild>) {
-        if let guild = try? decodeResult.unwrap() {
-            guilds.updateValue(guild, forKey: guild.id)
-        } else {
-            print("Failed to decode guild")
-        }
+    func appendOrReplace(_ guild: PreloadedGuild) {
+        guilds.updateValue(guild, forKey: guild.id)
     }
 
 
