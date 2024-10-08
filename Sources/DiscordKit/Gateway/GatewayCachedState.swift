@@ -44,10 +44,12 @@ public class CachedState: ObservableObject {
         user = event.user
         event.users.forEach(appendOrReplace(_:))
         event.merged_members.enumerated().forEach { (idx, guildMembers) in
-            members[event.guilds[idx].id] = guildMembers.first(where: { $0.user_id == event.user.id })
+            if let guildID = try? event.guilds[idx].unwrap().id {
+                members[guildID] = guildMembers.first(where: { $0.user_id == event.user.id })
+            }
         }
-        print(members)
-    }
+            print(members)
+        }
 
     // MARK: - Guilds
 
