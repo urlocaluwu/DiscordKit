@@ -32,8 +32,15 @@ public class CachedState: ObservableObject {
     /// Populates the cache using the provided event.
     /// - Parameter event: An incoming Gateway "ready" event.
     func configure(using event: ReadyEvt) {
-        event.guilds.forEach(appendOrReplace(_:))
-        dms = event.private_channels
+        event.guilds.forEach { decodeResult in
+            if let guild = try? decodeResult.unwrap() {
+                appendOrReplace(guild)
+            } else {
+                print("Failed to decode guild")
+            }
+    }
+
+        dms = event.private_channels.unwrap()
         user = event.user
         event.users.forEach(appendOrReplace(_:))
         event.merged_members.enumerated().forEach { (idx, guildMembers) in
