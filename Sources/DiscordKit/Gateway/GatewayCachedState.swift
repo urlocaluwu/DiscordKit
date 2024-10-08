@@ -31,23 +31,38 @@ public class CachedState: ObservableObject {
 
     /// Populates the cache using the provided event.
     /// - Parameter event: An incoming Gateway "ready" event.
-    func configure(using event: ReadyEvt) {
-        event.guilds.forEach { decodeResult in
-            if let guild = try? decodeResult.unwrap() {
-                appendOrReplace(guild)
-            } else {
-                print("Failed to decode guild")
-            }
-        }
 
-        dms = event.private_channels.compactUnwrap()
-        user = event.user
-        event.users.forEach(appendOrReplace(_:))
-        event.merged_members.enumerated().forEach { (idx, guildMembers) in
-            members[event.guilds[idx].id] = guildMembers.first(where: { $0.user_id == event.user.id })
+    func configure(using event: ReadyEvt) {
+    // Unwrap the guilds
+    event.guilds.forEach { decodeResult in
+        if let guild = try? decodeResult.unwrap() {
+            appendOrReplace(guild)
+        } else {
+            print("Failed to decode guild")
         }
-        print(members)
     }
+
+    // Unwrap DM channels
+    dms = event.private_channels.compactUnwrap()
+
+    // Unwrap users
+    event.users.forEach { decodeResult in
+        if let user = try? decodeResult.unwrap() {
+            appendOrReplace(user)
+        } else {
+            print("Failed to decode user")
+        }
+    }
+
+    // Handle members and current user
+    user = event.user
+    event.merged_members.enumerated().forEach { (idx, guildMembers) in
+        if let guildID = try? event.guilds[idx].unwrap().id {
+            members[guildID] = guildMembers.first(where: { $0.user_id == event.user.id })
+        }
+    }
+}
+
 
     // MARK: - Guilds
 
