@@ -15,7 +15,6 @@ let package = Package(
         .library(name: "DiscordKitBot", targets: ["DiscordKitBot"]) // Bot-oriented module, for use in bots
 	],
 	dependencies: [
-        .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0"),
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.6.0"),
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
